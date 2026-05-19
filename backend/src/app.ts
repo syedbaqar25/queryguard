@@ -13,7 +13,7 @@ import { streamRouter } from './routes/stream';
 import { onnxRouter } from './routes/onnx';
 import { register } from './monitoring/metrics';
 import { httpRequestsTotal, httpRequestDurationMs } from './monitoring/metrics';
-import logger from './utils/logger';
+import { logger } from './utils/logger';
 
 const app = express();
 
@@ -32,6 +32,10 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
