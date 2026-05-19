@@ -1,0 +1,180 @@
+{
+  "title": "QueryGuard",
+  "uid": "queryguard-main",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Queries Analyzed (total)",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(queryguard_queries_analyzed_total)",
+          "legendFormat": "Total"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Malicious Queries Detected",
+      "type": "stat",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(queryguard_queries_analyzed_total{label=\"MALICIOUS\"})",
+          "legendFormat": "Malicious"
+        }
+      ],
+      "options": { "colorMode": "background", "thresholds": { "steps": [{ "color": "red", "value": 0 }] } }
+    },
+    {
+      "id": 3,
+      "title": "Detection Rate",
+      "type": "gauge",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(queryguard_queries_analyzed_total{label=\"MALICIOUS\"}) / sum(queryguard_queries_analyzed_total)",
+          "legendFormat": "Rate"
+        }
+      ],
+      "options": { "max": 1, "min": 0 }
+    },
+    {
+      "id": 4,
+      "title": "Active SSE Connections",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "queryguard_active_sse_connections",
+          "legendFormat": "SSE"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Rate Limit Hits",
+      "type": "stat",
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(queryguard_rate_limit_hits_total)",
+          "legendFormat": "Rate Limit Hits"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Active Learning Queue Size",
+      "type": "stat",
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "queryguard_active_learning_queue_size",
+          "legendFormat": "Queue"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Query Analysis Rate (req/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(queryguard_queries_analyzed_total{label=\"SAFE\"}[1m])",
+          "legendFormat": "Safe"
+        },
+        {
+          "expr": "rate(queryguard_queries_analyzed_total{label=\"MALICIOUS\"}[1m])",
+          "legendFormat": "Malicious"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "ML Service Latency (p50/p95/p99)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(queryguard_ml_service_latency_ms_bucket[5m]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(queryguard_ml_service_latency_ms_bucket[5m]))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(queryguard_ml_service_latency_ms_bucket[5m]))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "HTTP Request Duration (p95)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(queryguard_http_request_duration_ms_bucket[5m]))",
+          "legendFormat": "p95 {{route}}"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "HTTP Errors (5xx rate)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(queryguard_http_requests_total{status_code=~\"5..\"}[1m])",
+          "legendFormat": "5xx {{route}}"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Adversarial Tests Run",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(queryguard_adversarial_tests_total[5m])",
+          "legendFormat": "Adversarial Tests/s"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Total HTTP Requests by Route",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(queryguard_http_requests_total[1m])",
+          "legendFormat": "{{method}} {{route}} {{status_code}}"
+        }
+      ]
+    }
+  ]
+}
