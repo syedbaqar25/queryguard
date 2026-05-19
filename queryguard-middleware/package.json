@@ -1,0 +1,35 @@
+{
+  "name": "queryguard-middleware",
+  "version": "1.0.0",
+  "description": "Express/Node.js middleware for SQL injection detection via QueryGuard",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --coverage",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": ["sql-injection", "security", "middleware", "express"],
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.7"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.25",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3",
+    "nock": "^13.5.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/tests"],
+    "coverageThreshold": {
+      "global": { "lines": 80 }
+    }
+  }
+}
