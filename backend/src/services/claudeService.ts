@@ -1,7 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Groq from 'groq-sdk';
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const client = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 export interface LabelSuggestion {
@@ -11,7 +11,7 @@ export interface LabelSuggestion {
   attack_type: string | null;
 }
 
-class ClaudeService {
+class AILabelService {
   async suggestLabel(query: string, modelConfidence: number): Promise<LabelSuggestion> {
     const prompt = `You are a SQL injection security expert. Analyze the following SQL query and determine if it is SAFE or MALICIOUS (SQL injection attempt).
 
@@ -27,13 +27,13 @@ Respond with a JSON object containing:
 
 Return only valid JSON, no markdown.`;
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const completion = await client.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 256,
       messages: [{ role: 'user', content: prompt }],
     });
 
-    const text = message.content[0].type === 'text' ? message.content[0].text : '';
+    const text = completion.choices[0]?.message?.content ?? '';
 
     try {
       const parsed = JSON.parse(text) as LabelSuggestion;
@@ -47,7 +47,7 @@ Return only valid JSON, no markdown.`;
       return {
         suggested_label: 'SAFE',
         confidence: 0.5,
-        reasoning: 'Failed to parse Claude response',
+        reasoning: 'Failed to parse Groq response',
         attack_type: null,
       };
     }
@@ -69,4 +69,4 @@ Return only valid JSON, no markdown.`;
   }
 }
 
-export const claudeService = new ClaudeService();
+export const claudeService = new AILabelService();

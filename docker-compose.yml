@@ -26,7 +26,7 @@ services:
         condition: service_healthy
     environment:
       - ML_SERVICE_URL=http://ml-service:8000
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
       - DEFAULT_API_KEY=${DEFAULT_API_KEY:-dev-key-change-me}
       - NODE_ENV=production
